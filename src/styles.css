@@ -97,6 +97,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .proof-icons { display: flex; padding-left: 4px; }
 .proof-icons span { width: 22px; height: 22px; display: grid; place-items: center; margin-left: -4px; color: var(--green); background: #fff; border: 1px solid #e5eee3; border-radius: 50%; }
 .land-art { position: relative; min-height: 325px; overflow: hidden; isolation: isolate; background: #dcebd8; }
+.workspace-overview { margin: -12px 0 37px; }
+.overview-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 13px; }
+.overview-heading .eyebrow { display: block; margin-bottom: 6px; }
+.overview-heading h2 { margin: 0; color: var(--ink); font: 700 16px 'Manrope', sans-serif; letter-spacing: -.45px; }
+.overview-live { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; }
+.overview-live > span { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald); }
+.overview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.overview-card { min-width: 0; min-height: 106px; position: relative; display: flex; align-items: flex-start; gap: 11px; padding: 15px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); }
+.overview-card-icon { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; color: var(--green); background: var(--green-soft); border-radius: 9px; }
+.overview-card-content { min-width: 0; display: grid; gap: 5px; padding-right: 2px; }
+.overview-card-label { color: #8c998f; font-size: 8px; font-weight: 700; letter-spacing: .9px; }
+.overview-card-content strong { overflow: hidden; color: var(--ink); font: 700 12px 'Manrope', sans-serif; text-overflow: ellipsis; white-space: nowrap; }
+.overview-card-detail { overflow: hidden; color: var(--muted); font-size: 9px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.overview-status { position: absolute; right: 12px; bottom: 12px; padding: 4px 6px; color: #8c7445; background: #faf5e9; border-radius: 4px; font-size: 7px; font-weight: 600; }
+.overview-status-ready { color: #34734a; background: var(--green-soft); }
+.overview-status-offline { color: #8c7445; }
+.overview-card-link { position: absolute; top: 12px; right: 11px; width: 25px; height: 25px; display: grid; place-items: center; color: #829087; background: transparent; border: 0; border-radius: 6px; }
+.overview-card-link:hover { color: var(--green); background: var(--green-soft); }
 .landscape-art { position: absolute; inset: 0; width: 100%; height: 100%; }
 .art-label { position: absolute; z-index: 4; right: 19px; bottom: 20px; min-width: 204px; display: flex; align-items: center; gap: 9px; padding: 9px 11px; color: #28472d; background: rgba(255, 255, 255, .93); border: 1px solid rgba(255,255,255,.7); border-radius: 8px; box-shadow: 0 6px 22px rgba(25, 52, 28, .13); }
 .art-label-mark { width: 28px; height: 28px; display: grid; place-items: center; color: var(--green); background: #edf5e9; border-radius: 7px; }
@@ -319,6 +337,15 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .land-art { min-height: 215px; }
   .art-label { right: 12px; bottom: 11px; }.art-coordinate { top: 13px; left: 13px; }
   .dashboard-page > .page-heading h1 { font-size: 20px; }
+  .workspace-overview { margin: -5px 0 29px; }
+  .overview-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
+  .overview-grid { grid-template-columns: 1fr; gap: 8px; }
+  .overview-card { min-height: 84px; padding: 12px; }
+  .overview-card-content { padding-right: 70px; }
+  .overview-card-label { font-size: 7px; }
+  .overview-card-content strong { font-size: 11px; }
+  .overview-card-detail { font-size: 9px; }
+  .overview-status { right: 11px; bottom: 11px; }
   .workflow-grid { grid-template-columns: 1fr; gap: 9px; }
   .workflow-step { min-height: auto; padding: 14px; }.workflow-copy h3 { margin-top: 8px; }.workflow-copy p { font-size: 10px; }
   .dashboard-footnote { font-size: 9px; }

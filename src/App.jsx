@@ -67,7 +67,7 @@ export default function App() {
           </div>
         </header>
         <main className="page-content" key={active}>
-          {active === 'dashboard' && <Dashboard onStart={startAnalysis} />}
+          {active === 'dashboard' && <Dashboard form={form} knowledgeCount={knowledge.length} onStart={startAnalysis} onNavigate={setActive} />}
           {active === 'analysis' && <Analysis form={form} setForm={setForm} image={image} setImage={setImage} onAnalyze={analyzeLand} />}
           {active === 'recommendations' && <Recommendations results={null} form={form} onStart={startAnalysis} />}
           {active === 'knowledge' && <Knowledge entries={knowledge} setEntries={setKnowledge} />}

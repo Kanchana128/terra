@@ -1,7 +1,11 @@
-import { ArrowRight, ArrowUpRight, CloudSun, ImagePlus, MapPin, Sprout, Waves } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BookOpen, CloudSun, ImagePlus, MapPin, Sprout, Waves } from 'lucide-react'
 import { PageHeading, WorkflowStep } from './Shared.jsx'
 
-export default function Dashboard({ onStart }) {
+export default function Dashboard({ form, knowledgeCount, onStart, onNavigate }) {
+  const hasLocation = Boolean(form.location.trim())
+  const hasArea = Boolean(form.area && Number(form.area) > 0)
+  const profileReady = hasLocation && hasArea
+
   return (
     <div className="dashboard-page">
       <div className="hero-panel">
@@ -47,10 +51,59 @@ export default function Dashboard({ onStart }) {
           <div className="art-coordinate">FIELD NOTES <span>•</span> 01</div>
         </div>
       </div>
+      <section className="workspace-overview" aria-labelledby="workspace-overview-title">
+        <div className="overview-heading">
+          <div>
+            <span className="eyebrow">A QUICK LOOK AT YOUR PROJECT</span>
+            <h2 id="workspace-overview-title">Your workspace at a glance</h2>
+          </div>
+          <span className="overview-live"><span /> Updates as you add details</span>
+        </div>
+        <div className="overview-grid">
+          <article className="overview-card">
+            <div className="overview-card-icon"><MapPin size={18} /></div>
+            <div className="overview-card-content">
+              <span className="overview-card-label">LAND PROFILE</span>
+              <strong>{hasLocation ? form.location : 'No location added yet'}</strong>
+              <span className="overview-card-detail">
+                {hasArea ? `${form.area} ${form.areaUnit || 'hectares'}` : 'Add a location and area to get started'}
+              </span>
+            </div>
+            <span className={`overview-status ${profileReady ? 'overview-status-ready' : ''}`}>
+              {profileReady ? 'Ready to review' : hasLocation || hasArea ? 'In progress' : 'Not started'}
+            </span>
+            <button className="overview-card-link" onClick={onStart} aria-label="Edit land profile">
+              <ArrowUpRight size={16} />
+            </button>
+          </article>
+          <article className="overview-card">
+            <div className="overview-card-icon"><BookOpen size={18} /></div>
+            <div className="overview-card-content">
+              <span className="overview-card-label">CROP LIBRARY</span>
+              <strong>{knowledgeCount} {knowledgeCount === 1 ? 'crop profile' : 'crop profiles'}</strong>
+              <span className="overview-card-detail">
+                {knowledgeCount ? 'Your saved reference notes' : 'Build a library from trusted sources'}
+              </span>
+            </div>
+            <button className="overview-card-link" onClick={() => onNavigate('knowledge')} aria-label="Open crop library">
+              <ArrowUpRight size={16} />
+            </button>
+          </article>
+          <article className="overview-card overview-card-engine">
+            <div className="overview-card-icon"><Sprout size={18} /></div>
+            <div className="overview-card-content">
+              <span className="overview-card-label">ANALYSIS ENGINE</span>
+              <strong>Not connected</strong>
+              <span className="overview-card-detail">Recommendations aren’t available yet</span>
+            </div>
+            <span className="overview-status overview-status-offline">Offline</span>
+          </article>
+        </div>
+      </section>
       <PageHeading
         eyebrow="A THOUGHTFUL THREE-STEP PROCESS"
-        title="From field to informed decision"
-        description="A flexible starting point for understanding the conditions that shape your land."
+        title="A clear path from field to insight"
+        description="Start with what you know. Add detail when you’re ready."
       />
       <div className="workflow-grid">
         <WorkflowStep number="01" icon={ImagePlus} title="Add a land image" description="Share a field photo to give your analysis a visual starting point." />
