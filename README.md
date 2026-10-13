@@ -18,6 +18,20 @@ npm run build
 npm run preview
 ```
 
+## Netlify deployment
+
+Netlify uses `netlify.toml` to run `npm ci --include=dev && npm run build` and
+publish `dist`. The explicit installation step ensures Vite and the other build
+tools are available even when a CLI deploy starts without installed dependencies.
+The `NPM_FLAGS=--include=dev` setting also includes these tools during Netlify's
+managed dependency installation.
+
+Commit `package.json` and `package-lock.json`, but not `node_modules`. Netlify
+installs dependencies from the lockfile so executable launchers and native
+packages are created for its Linux build environment rather than copied from a
+local machine. If a redeploy still uses old dependencies, retry with the build
+cache cleared.
+
 ## Project structure
 
 ```text
