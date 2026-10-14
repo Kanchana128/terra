@@ -1,21 +1,53 @@
-import { ArrowRight, ArrowUpRight, BookOpen, CloudSun, ImagePlus, MapPin, Sprout, Waves } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, BookOpen, CloudSun, ImagePlus, MapPin, Sparkles, Sprout, Waves } from 'lucide-react'
 import { PageHeading, WorkflowStep } from './Shared.jsx'
+import { detectAgroClimaticZone } from '../services/recommendationEngine.js'
+import { ScoreRing, CropDistributionBar } from './Visualizations.jsx'
 
-export default function Dashboard({ form, knowledgeCount, onStart, onNavigate }) {
-  const hasLocation = Boolean(form.location.trim())
+export default function Dashboard({ form, knowledgeCount, latestResult, onStart, onNavigate }) {
+  const hasLocation = Boolean(form.location && form.location.trim())
   const hasArea = Boolean(form.area && Number(form.area) > 0)
   const profileReady = hasLocation && hasArea
+  const topCrop = latestResult?.topRecommendations?.[0] || latestResult?.crops?.[0]
+  const detectedZone = detectAgroClimaticZone(form.location)
+
+  const latestCrops = latestResult?.crops ?? []
+  const strongMatches = latestCrops.filter((c) => c.suitability === 'Strong match').length
+  const conditionalMatches = latestCrops.filter((c) => c.suitability === 'Conditional match').length
+  const poorMatches = latestCrops.filter((c) => c.suitability === 'Poor match').length
 
   return (
     <div className="dashboard-page">
       <div className="hero-panel">
         <div className="hero-copy">
-          <div className="hero-kicker"><span /> LAND INTELLIGENCE, NATURALLY</div>
+          <div className="hero-kicker"><span /> TERRAFORM HACKATHON EDITION</div>
           <h1>Understand your land.<br /><em>Grow smarter.</em></h1>
-          <p>Bring together what you know about your land and make more considered decisions for what comes next.</p>
-          <button className="button button-primary hero-button" onClick={onStart}>Start land analysis <ArrowRight size={17} /></button>
-          <div className="hero-proof"><div className="proof-icons"><span><MapPin size={13} /></span><span><CloudSun size={13} /></span><span><Waves size={13} /></span></div><span>Grounded in your land's real conditions</span></div>
+          <p>
+            Adaptable agricultural land intelligence. Evaluate unknown land conditions, identify limiting factors, and receive explainable, verified crop recommendations.
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <button className="button button-primary hero-button" onClick={onStart}>
+              Start land analysis <ArrowRight size={17} />
+            </button>
+            {latestResult && (
+              <button
+                className="button button-secondary hero-button"
+                onClick={() => onNavigate('recommendations')}
+                style={{ background: 'white' }}
+              >
+                View latest results ({latestResult.status}) <ArrowUpRight size={16} />
+              </button>
+            )}
+          </div>
+          <div className="hero-proof">
+            <div className="proof-icons">
+              <span><MapPin size={13} /></span>
+              <span><CloudSun size={13} /></span>
+              <span><Waves size={13} /></span>
+            </div>
+            <span>Rule-based agronomic model · Never invents data · Decoupled knowledge</span>
+          </div>
         </div>
+
         <div className="land-art" aria-label="Illustration of green cultivated fields" role="img">
           <svg className="landscape-art" viewBox="0 0 560 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
@@ -47,70 +79,160 @@ export default function Dashboard({ form, knowledgeCount, onStart, onNavigate })
               <path d="M-20 353c90-17 164-4 244 18 87 23 208 17 350-30" />
             </g>
           </svg>
-          <div className="art-label"><span className="art-label-mark"><Sprout size={16} /></span><div><strong>Your land, understood</strong><span>Every field has a story</span></div><ArrowUpRight size={16} /></div>
+          <div className="art-label">
+            <span className="art-label-mark"><Sprout size={16} /></span>
+            <div>
+              <strong>Your land, understood</strong>
+              <span>Adaptive Agricultural Intelligence</span>
+            </div>
+            <ArrowUpRight size={16} />
+          </div>
           <div className="art-coordinate">FIELD NOTES <span>•</span> 01</div>
         </div>
       </div>
+
       <section className="workspace-overview" aria-labelledby="workspace-overview-title">
         <div className="overview-heading">
           <div>
             <span className="eyebrow">A QUICK LOOK AT YOUR PROJECT</span>
             <h2 id="workspace-overview-title">Your workspace at a glance</h2>
           </div>
-          <span className="overview-live"><span /> Updates as you add details</span>
+          <span className="overview-live"><span /> Engine Active · Model v1.0</span>
         </div>
+
         <div className="overview-grid">
+          {/* Card 1: Land Profile */}
           <article className="overview-card">
             <div className="overview-card-icon"><MapPin size={18} /></div>
             <div className="overview-card-content">
               <span className="overview-card-label">LAND PROFILE</span>
-              <strong>{hasLocation ? form.location : 'No location added yet'}</strong>
+              <strong>{hasLocation ? form.location : 'Ready to configure'}</strong>
               <span className="overview-card-detail">
-                {hasArea ? `${form.area} ${form.areaUnit || 'hectares'}` : 'Add a location and area to get started'}
+                {hasLocation && detectedZone
+                  ? `${detectedZone.zone} · ${hasArea ? `${form.area} ${form.areaUnit || 'hectares'}` : 'Area unrecorded'}`
+                  : hasArea
+                  ? `${form.area} ${form.areaUnit || 'hectares'} · ${form.soilType !== 'Unknown' ? form.soilType : 'Soil unverified'}`
+                  : 'Add location or select an agricultural region'}
               </span>
             </div>
             <span className={`overview-status ${profileReady ? 'overview-status-ready' : ''}`}>
-              {profileReady ? 'Ready to review' : hasLocation || hasArea ? 'In progress' : 'Not started'}
+              {profileReady ? 'Ready' : hasLocation || hasArea ? 'In progress' : 'Not started'}
             </span>
             <button className="overview-card-link" onClick={onStart} aria-label="Edit land profile">
               <ArrowUpRight size={16} />
             </button>
           </article>
+
+          {/* Card 2: Crop Library */}
           <article className="overview-card">
             <div className="overview-card-icon"><BookOpen size={18} /></div>
             <div className="overview-card-content">
               <span className="overview-card-label">CROP LIBRARY</span>
-              <strong>{knowledgeCount} {knowledgeCount === 1 ? 'crop profile' : 'crop profiles'}</strong>
+              <strong>{knowledgeCount} verified profiles</strong>
               <span className="overview-card-detail">
-                {knowledgeCount ? 'Your saved reference notes' : 'Build a library from trusted sources'}
+                ICAR & FAO agricultural reference benchmarks
               </span>
             </div>
             <button className="overview-card-link" onClick={() => onNavigate('knowledge')} aria-label="Open crop library">
               <ArrowUpRight size={16} />
             </button>
           </article>
+
+          {/* Card 3: Analysis Engine */}
           <article className="overview-card overview-card-engine">
             <div className="overview-card-icon"><Sprout size={18} /></div>
             <div className="overview-card-content">
               <span className="overview-card-label">ANALYSIS ENGINE</span>
-              <strong>Not connected</strong>
-              <span className="overview-card-detail">Recommendations aren’t available yet</span>
+              <strong>Rule-Based v1.0 Active</strong>
+              <span className="overview-card-detail">
+                {latestResult && topCrop
+                  ? `Top: ${topCrop.name} (${topCrop.score} pts)`
+                  : 'Ready to evaluate submitted land conditions'}
+              </span>
             </div>
-            <span className="overview-status overview-status-offline">Offline</span>
+            <span className="overview-status overview-status-ready">
+              {latestResult ? 'Evaluated' : 'Ready'}
+            </span>
+            <button
+              className="overview-card-link"
+              onClick={() => onNavigate(latestResult ? 'recommendations' : 'analysis')}
+              aria-label="View engine recommendations"
+            >
+              <ArrowUpRight size={16} />
+            </button>
           </article>
         </div>
+
+        {latestResult && topCrop && (
+          <div className="dashboard-telemetry-banner">
+            <div className="telemetry-gauge">
+              <ScoreRing score={topCrop.score} size={62} strokeWidth={5.5} label="Top score" />
+            </div>
+            <div className="telemetry-info">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span className="telemetry-label">LATEST EVALUATION TELEMETRY</span>
+                <span className="summary-status">{latestResult.status}</span>
+                {detectedZone && <span className="badge-mini">{detectedZone.zone}</span>}
+              </div>
+              <h3 style={{ margin: '4px 0 2px', fontSize: '15px', color: 'var(--ink)' }}>
+                {topCrop.name} <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 500 }}>({topCrop.category})</span>
+              </h3>
+              <p style={{ margin: 0, fontSize: '10px', color: 'var(--muted)', lineHeight: '1.45' }}>
+                {topCrop.explanation || topCrop.matchingConditions?.[0]}
+              </p>
+              <div style={{ marginTop: '8px', maxWidth: '360px' }}>
+                <CropDistributionBar
+                  strong={strongMatches}
+                  conditional={conditionalMatches}
+                  poor={poorMatches}
+                  total={latestCrops.length}
+                />
+              </div>
+            </div>
+            <div className="telemetry-action">
+              <button
+                className="button button-primary"
+                onClick={() => onNavigate('recommendations')}
+                style={{ minHeight: '35px', fontSize: '10.5px', padding: '0 13px', whiteSpace: 'nowrap' }}
+              >
+                Inspect Visual Radar & Details <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </section>
+
       <PageHeading
         eyebrow="A THOUGHTFUL THREE-STEP PROCESS"
         title="A clear path from field to insight"
         description="Start with what you know. Add detail when you’re ready."
       />
+
       <div className="workflow-grid">
-        <WorkflowStep number="01" icon={ImagePlus} title="Add a land image" description="Share a field photo to give your analysis a visual starting point." />
-        <WorkflowStep number="02" icon={CloudSun} title="Describe conditions" description="Add the soil, climate and water details you already know." />
-        <WorkflowStep number="03" icon={Sprout} title="Explore what fits" description="Connect a recommendation engine to explore suitable crop options." />
+        <WorkflowStep
+          number="01"
+          icon={ImagePlus}
+          title="Add a land image"
+          description="Share a field photo for qualitative visual context without pseudo-scientific inference."
+        />
+        <WorkflowStep
+          number="02"
+          icon={CloudSun}
+          title="Describe conditions"
+          description="Supply known soil, climate, and water details, or paste the hackathon organizers' case study."
+        />
+        <WorkflowStep
+          number="03"
+          icon={Sprout}
+          title="Explore what fits"
+          description="Evaluate suitability scores, analyze limiting bottlenecks, and view side-by-side comparisons."
+        />
       </div>
-      <div className="dashboard-footnote"><span className="status-pulse" /> Your information stays editable as the project evolves.</div>
+
+      <div className="dashboard-footnote">
+        <span className="status-pulse status-dot-active" />
+        <span>Analysis engine is online. Recommendations adapt instantly to changing land conditions.</span>
+      </div>
     </div>
   )
 }

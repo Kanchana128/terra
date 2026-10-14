@@ -39,7 +39,7 @@ export default function Sidebar({ active, onNavigate, open, onClose }) {
             <strong>Grow with clarity</strong>
             <p>Thoughtful decisions start with understanding your land.</p>
           </div>
-          <div className="sidebar-footer"><span className="footer-status-dot" /> Engine not connected</div>
+          <div className="sidebar-footer"><span className="footer-status-dot status-dot-active" /> Engine active (v1.0)</div>
         </div>
       </aside>
     </>
